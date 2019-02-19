@@ -1,0 +1,17 @@
+<link rel="stylesheet" href="<%=request.getContextPath()%>/js/artDialog-master/css/ui-dialog.css">
+<script src="<%=request.getContextPath()%>/js/artDialog-master/dist/dialog-plus-min.js"></script>
+
+
+var add_from = dialog({
+title: '增加图书',
+content: add_from_div,
+okValue: '确 定',
+ok: function () {
+alert("点击了确定按钮")
+},
+cancelValue: '取消',
+cancel: function () {
+alert("点击了取消按钮")
+}
+});
+add_from.show();

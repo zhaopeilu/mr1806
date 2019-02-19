@@ -1,0 +1,187 @@
+﻿<script src="<%=request.getContextPath()%>/js/jquery-1.11.3.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/jquery-easyui/themes/default/easyui.css">   
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/jquery-easyui/themes/icon.css">   
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-easyui/jquery.easyui.min.js"></script> 
+
+<!--Xml-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--main-->
+function queryGoods(title,url) {
+		//判断是否存在,exists表明指定的面板是否存在
+		if($("#tabs").tabs("exists",title)){
+			//若果存在则选中该选择卡
+			$('#tabs').tabs('getSelected');  // 获取选择的面板
+		}else{
+			//如果不存在则创建新的选项卡
+			$('#tabs').tabs('add',{    
+			    title:title,  
+			   	//增加选项卡中的内容
+			    content:'<iframe style="width:100%;height:100%;position:relative;" src="'+url+'" frameborder="0" scrolling="true" ></iframe>',
+			    closable:true,    
+			    tools:[{     
+			        iconCls:'icon-mini-refresh',    
+			        handler:function(){    
+			        	//刷新面板
+			        	 var tab = $('#tabs').tabs("getSelected");// 获取选择的面板
+    		        	$('#tabs').tabs('update', {
+   		        		tab: tab,
+   		        		options: {
+   		        			//title: '新标题',
+   		        			//href: 'get_content.php'  // 新内容的URL
+   		        			}
+  		       			});
+			        }    
+			    }]    
+			});  
+		}
+	}
+	
+
+<!--list-->
+//单元格formatter(格式化器)函数，带3个参数: value字段值,row:行记录数据,index:行索引
+	formatter: function(value,row,index){
+		if (value==1){
+			return "上架";
+		} else {
+			return "未上架";
+		}
+	}
+	
+	
+	 //分页
+	    fit:true,
+	    pagination:true,
+	    pageSize:5,
+	    pageList:[5,20,30,40,50],
+	    //toolbar ：添加工具栏
+	    toolbar: [{
+			iconCls: 'icon-edit',
+			handler: function(){
+				addDialog();
+			}
+		},'-',{
+			iconCls: 'icon-edit',
+			handler: function(){
+				deleteGoods();
+			}
+		},'-',{
+			iconCls: 'icon-edit',
+			handler: function(){
+				updateDialog();
+			}
+		}]
+		//弹框
+		 $('#dd').dialog({    
+			    title: '新增商品',    
+			    width: 400,    
+			    height: 200,    
+			    closed: false,    
+			    cache: false,    
+			    modal: true ,
+			    //提交按钮
+			    toolbar:[{
+					iconCls: 'icon-ok',
+					handler: function(){
+						//成功后提交表单
+						addGoods();
+					}
+				},'-',{
+					iconCls: 'icon-no',
+					handler: function(){
+					//关闭弹框
+					$('#dg').dialog('close');
+					//表单重置
+					$('#ff').form('resert');
+					}
+					}]
+				});  
+			}
+		})
+	}
+	//删除
+	 	function deleteGoods(id) {
+			//获得所有表格信息
+			var goods=$('#dg').datagrid('getSelected');// 固定所有列大小
+			//获得Id，根据Id进行删除
+			var id=goods.goodsId;
+			//根据Ajax异步删除
+			$.ajax({
+ 			type:'post',
+ 			url:'<%=path%>/goods/delectGoods.do',
+ 			data:{
+ 				goodsId:id
+ 			},
+ 			success:function(data){
+ 				//成功后刷新表格
+ 				$('#dg').datagrid('reload'); 
+ 			},
+ 			//错误回调函数
+ 			error:function(){
+ 				alert("删除失败");
+ 			}
+ 		})
+
+	//修改弹框
+	 	function updateDialog() {
+	 		//获得表格所有信息
+	 		var goods=$('#dg').datagrid('getSelected');// 固定所有列大小
+			//根据load进行回显
+			//load 回显
+	 		$('#ff').form('load',{
+	 			goodsId:goods.goodsId,
+		 		goodsName:goods.goodsName,
+		 		goodsState:goods.goodsState,
+		 		goodsType:goods.goodsType,
+		 		goodsTime:goods.goodsTimeStr,
+	 		}),
+	 		$('#dd').dialog({    
+			    title: '修改商品',    
+			    width: 400,    
+			    height: 200,    
+			    closed: false,    
+			    cache: false,    
+			    modal: true ,
+			    //提交按钮
+			    toolbar:[{
+					iconCls: 'icon-ok',
+					handler: function(){
+						//成功后提交表单
+						updateGoods();
+					}
+				},'-',{
+					iconCls: 'icon-no',
+					handler: function(){
+					//关闭弹框
+					$('#dg').dialog('close');
+					//表单重置
+					$('#ff').form('resert');
+					}
+				}]
+
+			});    
+		}
+
+
+
+
+
+<select id="queryGoodsPage" resultType="com.mr.pojo.Goods">
+		select * from t_goods
+	</select>
+	<insert id="addGoods">
+		insert into t_goods(goods_name,goods_state,goods_type,goods_time,goods_city)
+		values(#{goodsName},#{goodsState},#{goodsType},#{goodsTime},#{goodsCity})
+	</insert>
+	<delete id="delectGoods">
+		delete from t_goods where goods_id=#{goodsId}
+	</delete>
+	<update id="updateGoods">
+		update t_goods set goods_name=#{goodsName},goods_state=#{goodsState},goods_type=#{goodsType},goods_time=#{goodsTime},goods_city=#{goodsCity}
+		where goods_id=#{goodsId}
+	</update>
+
+
+	

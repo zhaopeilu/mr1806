@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mr.mapper.UserMapper">
+    <select id="queryAll" resultType="com.mr.pojo.User" parameterType="com.mr.pojo.User">
+        SELECT * FROM t_user
+    </select>
+    <insert id="addUser" parameterType="com.mr.pojo.User" >
+        INSERT INTO t_user(user_name,user_age,user_bir,user_img) VALUES(#{userName},#{userAge},#{userBir},#{userImg})
+    </insert>
+    <delete id="delUserById" parameterType="com.mr.pojo.User" >
+        DELETE FROM t_user WHERE user_id = #{userId}
+    </delete>
+    <update id="updateUser" parameterType="com.mr.pojo.User" >
+        update t_user set user_name=#{userName},user_age=#{userAge},user_bir=#{userBir},user_img=#{userImg} where user_id=#{userId}
+    </update>
+</mapper>

@@ -1,0 +1,44 @@
+	
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/uploadify/jquery.uploadify.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/uploadify/uploadify.css" />
+	
+	<!-- 上传按钮 -->
+	<input type="file" id="uploadify"/>
+	<!-- 作用：隐藏图片上传的路径 ，需要传递到后台-->
+	<input type="text" name="car.carImg" id="imgInp">
+	<!-- 图片进行回显 -->
+	<img id="returnImg" alt="无法加载"  style="width:40px;height: 40px" >
+
+<script type="text/javascript">
+	 	$("#uploadify").uploadify({
+		 	// 插件自带 不可忽略的参数
+		 	'swf': '<%=request.getContextPath()%>/js/uploadify/uploadify.swf',
+		 	// 前台请求后台的 url  不可忽略的参数
+		 	'uploader': '<%=request.getContextPath()%>/carAction!upload.action',
+		 	// 给 div 的进度条加背景 不可忽略
+		 	'queueID': 'fileQueue',
+		 	// 上传文件文件名
+		 	'fileObjName' : 'img',
+		 	// 给上传按钮设置文字
+		 	'buttonText': ' 上传文件 ',
+		 	// 设置文件是否自动上传
+		 	'auto': true,
+		 	// 可以同时选择多个文件 默认为 true 不可忽略
+		 	'multi': true,
+		 	// 上传后队列是否消失
+		 	'removeCompleted': true,
+		 	// 队列消失时间
+		 	'removeTimeout' : 1,
+		 	// 上传文件的个数，项目中一共可以上传文件的个数
+		 	'uploadLimit': -1,
+		 	'fileExt': '*.*;',
+		 	// 成功回调函数 file ：文件对象。 data 后台输出数据
+		 	'onUploadSuccess':function(file,data,response){
+				//json字符串转为json对象
+				var data1 = eval("("+data+")");
+		 		console.log(data1.imgUrl);
+		 		$("#imgInp").val(data1.imgUrl);
+		 		$("#returnImg").prop("src","<%=request.getContextPath()%>"+data1.imgUrl)
+		 	}
+	 	});
+ 	</script>
